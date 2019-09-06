@@ -1,0 +1,34 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  annotations:
+    last_promoted_version: 1-33-0
+  name: research-starter
+  namespace: application
+spec:
+  gateways:
+  - application-gateway
+  - mesh
+  hosts:
+  - research-starter.eksl-useast1.eks.eis-deliverydevqa.cloud
+  - research-starter
+  http:
+  - match:
+    - sourceLabels:
+        testtraffic: "true"
+    - headers:
+        cookie:
+          regex: ^(.*?;)?\s?(testtraffic=true)(;.*)?$
+    - headers:
+        X-internal-ebsco-routing:
+          exact: testtraffic
+    route:
+    - destination:
+        host: research-starter
+        subset: testtraffic
+      weight: 100
+  - route:
+    - destination:
+        host: research-starter
+        subset: 1-36-0
+      weight: 100

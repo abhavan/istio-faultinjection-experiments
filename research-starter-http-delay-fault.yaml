@@ -1,0 +1,29 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  annotations:
+    last_promoted_version: 1-33-0
+  name: research-starter
+  namespace: application
+spec:
+  gateways:
+  - application-gateway
+  - mesh
+  hosts:
+  - research-starter.eksl-useast1.eks.eis-deliverydevqa.cloud
+  - research-starter
+  http:
+  - fault:
+      delay:
+        percentage:
+          value: 100.0
+        fixedDelay: 6s
+    route:
+    - destination:
+        host: research-starter
+        subset: 1-133-0
+  - route:
+    - destination:
+        host: research-starter
+        subset: 1-33-0
+      weight: 100

@@ -1,0 +1,34 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  annotations:
+    last_promoted_version: 1-133-0
+  name: search-proxy
+  namespace: application
+spec:
+  gateways:
+  - application-gateway
+  - mesh
+  hosts:
+  - search-proxy.eksl-useast1.eks.eis-deliverydevqa.cloud
+  - search-proxy
+  http:
+  - match:
+    - sourceLabels:
+        testtraffic: "true"
+    - headers:
+        cookie:
+          regex: ^(.*?;)?\s?(testtraffic=true)(;.*)?$
+    - headers:
+        X-internal-ebsco-routing:
+          exact: testtraffic
+    route:
+    - destination:
+        host: search-proxy
+        subset: testtraffic
+      weight: 100
+  - route:
+    - destination:
+        host: search-proxy
+        subset: 1-133-0
+      weight: 100
